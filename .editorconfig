@@ -1,0 +1,98 @@
+# https://EditorConfig.org
+
+root = true
+
+[*]
+
+indent_size = 4
+insert_final_newline = true
+
+# see https://github.com/CppCXY/EmmyLuaCodeStyle
+[*.lua]
+
+# [basic]
+
+tab_width = 4
+indent_style = tab
+quote_style = single # none/single/double
+continuation_indent_size = 4
+end_of_line = auto # crlf/lf/cr/auto
+detect_end_of_line = false
+max_line_length = 120
+
+# [function]
+
+align_call_args = false # (optional) true/false/only_after_more_indention_statement/only_not_exist_cross_row_expression
+align_function_define_params = false
+remove_expression_list_finish_comma = true
+call_arg_parentheses = keep # keep/remove/remove_table_only/remove_string_only/unambiguous_remove_string_only
+
+# [table]
+
+continuous_assign_table_field_align_to_equal_sign = false
+keep_one_space_between_table_and_bracket = true
+
+# [statement]
+
+align_chained_expression_statement = false
+max_continuous_line_distance = 1
+continuous_assign_statement_align_to_equal_sign = false
+if_condition_align_with_each_other = false
+local_assign_continuation_align_to_first_expression = false
+
+# [indentation]
+
+label_no_indent = false
+do_statement_no_indent = false
+if_condition_no_continuation_indent = false
+if_branch_comments_after_block_no_indent = false
+
+# [space]
+
+table_append_expression_no_space = false
+long_chain_expression_allow_one_space_after_colon = false
+remove_empty_header_and_footer_lines_in_function = true
+space_before_function_open_parenthesis = false
+space_before_open_square_bracket = false
+keep_one_space_between_namedef_and_attribute = false
+
+# [row_layout]
+# The following configuration supports four expressions
+# minLine:${n}
+# keepLine
+# keepLine:${n}
+# maxLine:${n}
+
+keep_line_after_if_statement = minLine:0
+keep_line_after_do_statement = minLine:0
+keep_line_after_while_statement = minLine:0
+keep_line_after_repeat_statement = minLine:0
+keep_line_after_for_statement = minLine:0
+keep_line_after_local_or_assign_statement = maxLine:1
+keep_line_after_function_define_statement = maxLine:1
+keep_line_after_expression_statement = maxLine:1
+
+# [diagnostic]
+
+enable_check_codestyle = true
+
+# [diagnostic.name_style]
+
+enable_name_style_check = true
+# the following is name style check rule
+# base option off/camel_case/snake_case/upper_snake_case/pascal_case/same(filename/first_param/'<const string>', snake_case/pascal_case/camel_case)
+# all option can use '|' represent or
+# for example:
+# snake_case | upper_snake_case
+# same(first_param, snake_case)
+# same('m')
+
+local_name_define_style = snake_case
+function_param_name_style = snake_case
+function_name_define_style = snake_case
+local_function_name_define_style = snake_case
+table_field_name_define_style = snake_case
+global_variable_name_define_style = snake_case|upper_snake_case
+module_name_define_style = same('m')|same(filename, snake_case)
+require_module_name_style = same(first_param, snake_case)
+class_name_define_style = same(filename, snake_case)

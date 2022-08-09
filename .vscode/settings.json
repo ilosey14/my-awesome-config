@@ -1,0 +1,58 @@
+{
+	"Lua.workspace.library": [
+		"/usr/share/awesome/lib"
+	],
+	"Lua.completion.autoRequire": false,
+	"Lua.diagnostics.globals": [
+		"awesome",
+		"client",
+		"screen",
+		"mouse",
+		"mousegrabber",
+		"root",
+		"tag"
+	],
+	"cSpell.words": [
+		"awesomewm",
+		"fullscreen",
+		"imagebox",
+		"keygrabber",
+		"metatable",
+		"mousegrabber",
+		"stylesheet",
+		"systray",
+		"tasklist",
+		"textbox",
+		"textclock",
+		"titlebar",
+		"titlebars",
+		"wibox",
+		"workarea"
+	],
+	"cSpell.ignoreWords": [
+		"Roboto",
+		"allscreen",
+		"bgimage",
+		"clienticon",
+		"dblclick",
+		"ellipsize",
+		"getproperty",
+		"keypressed",
+		"keyreleased",
+		"liblua",
+		"lockscreen",
+		"mkdir",
+		"ontop",
+		"progressbar",
+		"tolocalestring",
+		"unmanage",
+		"unmanaged",
+		"upower",
+		"valign",
+		"xresources",
+		"xset"
+	],
+	"Lua.diagnostics.disable": [
+		"trailing-space"
+	]
+}

@@ -1,0 +1,108 @@
+#!/bin/bash
+shopt -s extglob
+
+# The config build system
+#
+# Packages can provide hooks for system-dependent or otherwise repetitive-
+# to-compute static config values to be evaluated and set at build-time.
+# A package should provide a `CONFIG_NAME` and optionally a `CONFIG_TYPE`
+# along with the config contents to utilize the update functionality
+# provided by the build system.
+# However a hook script may choose to interact with its package directory
+# in any way it chooses.
+# Hooks are ran in an isolated shell and pass values through their `stdout`.
+#
+# As an example, hardware temperature sensors exist in varying locations
+# across devices but generally remain the same for a single device.
+# A package can therefore provide a build hook to get the device path only
+# once after install rather than during every startup.
+# Changing out the hardware mentioned would require a rebuild.
+#
+# Build hook env:
+# `DIR`    The package install path
+#
+# Passing hook values to the build system:
+# CONFIG_NAME (string) - the build target file in the package install directory
+# `echo 'CONFIG_NAME=my-config'`
+#
+# CONFIG_TYPE ('ASSOC'|'INDEX') - the array type of the config content
+# `echo 'CONFIG_TYPE=ASSOC' # default value is ASSOC`
+#
+# Config values
+# `echo greeting = "Hello there"`
+# `echo response = "General Kenobi!"`
+# Values can be any value supported the Lua syntax.
+# Commas between successive key-value pairs are not required.
+# An echo statement should be limited to one key-value pair.
+#
+# Pass messages to the build `stdout`:
+# `echo '# This message starts with a hashtag'`
+#
+
+D='+([0-9])'
+S='*([[:space:]])'
+
+function update_config() {
+	local config_path=${1:?'[build:update_config] Missing config path'}
+	local config=${2:?'[build:update_config] Missing config'}
+	local iter
+
+	case "$3" in
+		ASSOC) iter=pairs ;;
+		INDEX) iter=ipairs ;;
+		*) iter=pairs ;;
+	esac
+
+	awesome-client << EOF
+local config = require('lib.config')
+local h = config.load('$config_path')
+for k, v in $iter { $config } do h[k] = v end
+local success, err, code = config.save(h)
+if not success then return string.format('[%s] %s: failed to save config "$config_path"', code, err) end
+EOF
+}
+
+# hooks
+echo 'Running build hooks...'
+
+hooks=($( find ./bin/hooks -name '*.sh' | sort ))
+count=${#hooks[@]}
+
+for (( i = 0; i < count; ))
+do
+	f=${hooks[$i]}
+	(( i++ ))
+
+	# get install dir from hook name
+	name=$( basename -s .sh $f )
+	base=${name#*${D}-}
+	config_path=${base//_/.}
+
+	# run isolated hook
+	config=
+	config_name=
+	config_type=ASSOC
+
+	export DIR=./${base//_/\/}
+
+	echo "($i/$count)> $name"
+	while read line
+	do
+		case "$line" in
+			${S}) ;; # ignore empty line
+			${S}\#*) echo ${line#${S}\#${S}} ;;
+			${S}CONFIG_NAME=*) config_name="${line#${S}CONFIG_NAME=}" ;;
+			${S}CONFIG_TYPE=*) config_type="${line#${S}CONFIG_TYPE=}" ;;
+			*) config+=$line',' ;;
+		esac
+	done < <( bash $f )
+
+	# update config if provided
+	if [[ -n $config_name && -n $config ]]
+	then
+		echo 'Updating config...'
+		update_config "$config_path.$config_name" "$config" "$config_type"
+	fi
+
+	echo
+done

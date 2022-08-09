@@ -1,0 +1,17 @@
+.env
+docs/*
+!docs/*.sh
+tmp/*
+
+# assets
+*.png
+*.jpg
+*.jpeg
+*.gif
+config/theme/icons/*/*
+config/user/*
+utils/emoji-picker/unicode.txt
+
+# build targets
+config/global/keys.conf
+utils/emoji-picker/emoji.txt
