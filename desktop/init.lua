@@ -14,6 +14,7 @@ awesome.connect_signal(
 		require('desktop.menu') -- TODO redo
 		require('desktop.osd')
 		require('desktop.titlebars')
+		require('desktop.wrap-around')
 	end)
 
 local padding = beautiful.margins
@@ -33,7 +34,7 @@ local function update_layout(c)
 
 	local fullscreen = c.fullscreen
 
-	awesome.emit_signal('desktop::taskbar:visible', not fullscreen or (fullscreen and c.minimized))
+	awesome.emit_signal('desktop::taskbar:visible', c.screen, not fullscreen or (fullscreen and c.minimized))
 
 	if fullscreen then
 		awesome.emit_signal('desktop::mask:visible', false)
