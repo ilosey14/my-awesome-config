@@ -1,6 +1,9 @@
 local awful = require('awful')
+local beautiful = require('beautiful')
 
 local keys = require('config.global.mod')
+
+local margins = beautiful.margins
 local super = keys.super
 local alt = keys.alt
 local shift = keys.shift
@@ -134,13 +137,13 @@ local client_keys = awful.util.table.join(
 	awful.key(
 		{ super },
 		'Left',
-		function (c) snap_to_left(c, { honor_workarea = true, to_percent = 0.5 }) end,
+		function (c) snap_to_left(c, { honor_workarea = true, margins = margins, to_percent = 0.5 }) end,
 		{ description = 'Snap to left', group = 'Client' }
 	),
 	awful.key(
 		{ super },
 		'Right',
-		function (c) snap_to_right(c, { honor_workarea = true, to_percent = 0.5 }) end,
+		function (c) snap_to_right(c, { honor_workarea = true, margins = margins, to_percent = 0.5 }) end,
 		{ description = 'Snap to right', group = 'Client' }
 	),
 	--

@@ -2,6 +2,8 @@ local awful = require('awful')
 local beautiful = require('beautiful')
 local gears = require('gears')
 
+local icons = require('config.theme.icons')
+
 local tag_defaults = {
 	gap_single_client = true,
 	gap = beautiful.useless_gap,
@@ -14,6 +16,12 @@ local tags = {
 		selected = true
 	}
 }
+
+-- icons
+
+beautiful.layout_floating = icons.layout_floating
+beautiful.layout_tile = icons.layout_tile
+beautiful.layout_dwindle = icons.layout_dwindle
 
 -- signals
 

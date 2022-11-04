@@ -84,14 +84,14 @@ local global_keys = {
 	awful.key {
 		modifiers = { super },
 		key = '=',
-		on_press = function () awful.incmwfact(0.05) end,
+		on_press = function () awful.tag.incmwfact(0.05) end,
 		group = 'Layout',
 		description = 'Increase master width factor'
 	},
 	awful.key {
 		modifiers = { super },
 		key = '-',
-		on_press = function () awful.incmwfact(-0.05) end,
+		on_press = function () awful.tag.incmwfact(-0.05) end,
 		group = 'Layout',
 		description = 'Decrease master width factor'
 	},

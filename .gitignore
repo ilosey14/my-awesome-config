@@ -14,4 +14,5 @@ utils/emoji-picker/unicode.txt
 
 # build targets
 config/global/keys.conf
+desktop/control-center/settings.conf
 utils/emoji-picker/emoji.txt

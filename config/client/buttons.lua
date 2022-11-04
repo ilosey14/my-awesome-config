@@ -1,7 +1,16 @@
 local awful = require('awful')
+
+local config = require('lib.config')
 local mod = require('config.global.mod')
 
+local settings = config.load('config.client.settings')
 local super = mod.super
+
+awful.mouse.drag_to_tag.enabled = settings.drag_to_tag_enabled
+awful.mouse.resize.set_mode(settings.resize_mode)
+awful.mouse.snap.aerosnap_distance = settings.snap_aerosnap_distance
+awful.mouse.snap.default_distance = settings.snap_default_distance
+awful.mouse.snap.edge_enabled = settings.snap_edge_enabled
 
 return awful.util.table.join(
 	awful.button(
