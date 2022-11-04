@@ -71,7 +71,7 @@ local function create_button()
 					status = '_weak'
 				end
 			else
-				strength = 'N/A '
+				strength = 100
 			end
 
 			icon.image = icons[string.format('%s%s', if_type, status)]

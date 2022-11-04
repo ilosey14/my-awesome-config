@@ -15,7 +15,7 @@ function monitor.create(command, callbacks)
 	end
 
 	function m:stop()
-		if not self.pid then return end
+		if not tonumber(self.pid) then return end
 		awful.spawn(string.format('kill %s', self.pid))
 	end
 

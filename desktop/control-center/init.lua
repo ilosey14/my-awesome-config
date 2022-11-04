@@ -181,6 +181,8 @@ local function create_slider(label, icon, signal, on_change)
 	awesome.connect_signal(
 		signal..':event',
 		function (value)
+			if not value then return end
+
 			is_changing = true
 			slider.value = value
 			is_changing = false
@@ -191,6 +193,8 @@ local function create_slider(label, icon, signal, on_change)
 	awesome.emit_signal(
 		signal..':value',
 		function (value)
+			if not value then return end
+
 			is_changing = true
 			slider.value = value
 			is_changing = false

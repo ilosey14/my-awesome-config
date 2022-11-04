@@ -83,6 +83,7 @@ local context_menu = awful.popup {
 		margins = margins,
 		widget = wibox.container.margin
 	},
+	screen = screen.primary,
 	type = 'popup_menu',
 	preferred_positions = { 'bottom' },
 	preferred_alignments = { 'middle', 'front', 'back' },
@@ -102,14 +103,15 @@ function context_menu:show(client)
 	-- get the full task list button which is
 	-- the second to last geometry in the current geometries table
 	local mouse_coords = mouse.coords()
-	local geo_list = mouse.current_widget_geometries
-	local geo = geo_list[#geo_list - 1]
+	local w_geo_list = mouse.current_widget_geometries
+	local w_geo = w_geo_list[#w_geo_list - 1]
+	local s_geo = mouse.screen.geometry;
 
 	awful.placement.top(context_menu, {
 		parent = mouse,
 		offset = {
-			x = geo.x + geo.width / 2 - mouse_coords.x,
-			y = taskbar_bottom - mouse_coords.y
+			x = s_geo.x + w_geo.x + w_geo.width / 2 - mouse_coords.x,
+			y = s_geo.y + taskbar_bottom - mouse_coords.y
 		},
 		honor_workarea = true,
 		margins = gap

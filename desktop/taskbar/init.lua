@@ -32,6 +32,8 @@ local function create_taskbar(s)
 			if w then w.cursor = 'left_ptr' end
 		end)
 
+	local is_primary = (s.index == screen.primary.index)
+
 	local app_drawer			= require('desktop.app-drawer')
 	local search				= require('desktop.search')
 	local pinned_apps			= require('desktop.pinned-apps')
@@ -56,8 +58,8 @@ local function create_taskbar(s)
 			spacing = beautiful.useless_gap,
 
 			app_drawer.create_button(),
-			search.create_button(),
-			pinned_apps.create_list(),
+			is_primary and search.create_button(),
+			is_primary and pinned_apps.create_list(),
 			{
 				{
 					{
@@ -80,29 +82,31 @@ local function create_taskbar(s)
 			spacing = beautiful.useless_gap,
 
 			key_state,
-			systray.create_button(),
+			is_primary and systray.create_button(),
 			network.create_button(),
 			battery.create_button(),
 			layout.create_button(s),
-			control_center.create_button(s),
-			notification_center.create_button(s),
-			clock.create_button(s)
+			is_primary and control_center.create_button(s),
+			is_primary and notification_center.create_button(s),
+			is_primary and clock.create_button(s)
 		}
 	}
 
 	-- connect signal
 	awesome.connect_signal(
 		'desktop::taskbar:visible',
-		function (set_visible)
+		function (s_, set_visible)
+			if s_ and s.index ~= s_.index then return end
+
 			if type(set_visible) == 'boolean' then
 				panel.visible = set_visible
 			else
 				panel.visible = not panel.visible
 			end
 
-			if s == screen.primary then
-				awesome.emit_signal('desktop::taskbar:event', panel)
-			end
+			-- if s == screen.primary then
+			awesome.emit_signal('desktop::taskbar:event', panel)
+			-- end
 		end)
 
 	--

@@ -106,7 +106,7 @@ local tasklist = awful.widget.tasklist {
 
 			if not content then return end
 
-			timers.set_timeout(function () content.image = screenshot_client(c) end, 1)
+			timers.set_timeout(function () if c.valid then content.image = screenshot_client(c) end end, 1)
 		end,
 		update_callback = function (self, c)
 			local time = os.time()
@@ -116,7 +116,7 @@ local tasklist = awful.widget.tasklist {
 			last_update = time
 
 			-- update the switcher screenshot
-			screenshot_client(c)
+			if c.valid then screenshot_client(c) end
 			self:emit_signal('widget::redraw_needed')
 		end
 	}
@@ -225,4 +225,7 @@ awesome.connect_signal(
 
 client.connect_signal(
 	'request::unmanage',
-	function (c) awful.spawn(string.format('rm %s', get_client_screenshot_path(c))) end)
+	function (c)
+		local path = get_client_screenshot_path(c)
+		awful.spawn(string.format('[[ -f "%s" ]] && rm "%s"', path, path))
+	end)
