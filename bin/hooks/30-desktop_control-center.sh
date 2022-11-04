@@ -6,7 +6,7 @@ echo CONFIG_NAME=settings
 # cpu
 echo '# CPU temperature input...'
 
-labels='^Package|^Tdie|^Tclt'
+labels='^Package|^Tdie|^Tctl'
 cpu_temp_cmd=/sys/class/thermal/thermal_zonw0/temp
 
 for f in /sys/class/hwmon/hwmon*/temp*_label
@@ -16,7 +16,7 @@ do
 	if [[ "$label" =~ $labels ]]
 	then
 		cpu_temp_cmd='cat '${f/label/input}
-		cpu_temp_max=$( cat ${f/label/max} )
+		cpu_temp_max=$( [[ -f "${f/label/max}" ]] && echo $( cat ${f/label/max} ) ||  echo 0 )
 
 		echo "# ... found \"$label\" at $cpu_temp_cmd"
 		break

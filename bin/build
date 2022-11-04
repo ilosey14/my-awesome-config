@@ -100,7 +100,7 @@ do
 	# update config if provided
 	if [[ -n $config_name && -n $config ]]
 	then
-		echo 'Updating config...'
+		echo "Updating config \"$config_path.$config_name\"..."
 		update_config "$config_path.$config_name" "$config" "$config_type"
 	fi
 
