@@ -125,6 +125,7 @@ local tasklist = awful.widget.tasklist {
 -- https://awesomewm.org/apidoc/widgets/awful.widget.tasklist.html
 local switcher = awful.popup {
 	widget = tasklist,
+	screen = screen.primary,
 	type = 'popup_menu',
 	visible = false,
 	ontop = true,
@@ -197,15 +198,15 @@ end
 
 awesome.connect_signal(
 	'desktop::switcher:previous',
-	function (s)
-		show_switcher(s)
+	function ()
+		show_switcher()
 		timers.set_timeout(function () history.focus_previous() end)
 	end)
 
 awesome.connect_signal(
 	'desktop::switcher:next',
-	function (s)
-		show_switcher(s)
+	function ()
+		show_switcher()
 		timers.set_timeout(function () history.focus_next() end)
 	end)
 
