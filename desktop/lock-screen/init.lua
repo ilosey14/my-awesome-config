@@ -124,7 +124,7 @@ local function login_success()
 
 	timers.set_timeout(
 		function ()
-			awesome.emit_signal('desktop::lock-screen:visible', false)
+			awesome.emit_signal('desktop::lock-screen', false)
 			reset_lockscreen()
 		end,
 		unlock_delay)
@@ -228,74 +228,83 @@ local function create_main_lockscreen(s)
 		width = s.geometry.width,
 		height = s.geometry.height,
 		fg = beautiful.fg_normal,
-		bg = beautiful.background,
-		bgimage = wallpaper
+		bg = beautiful.background
 	}
 
 	lockscreen:setup {
-		layout = wibox.layout.align.vertical,
-		expand = 'none',
-		nil,
 		{
-			layout = wibox.layout.align.horizontal,
+			image = wallpaper,
+			resize = true,
+			horizontal_fit_policy = 'fit',
+			vertical_fit_policy = 'fit',
+			widget = wibox.widget.imagebox
+		},
+		{
+			layout = wibox.layout.align.vertical,
 			expand = 'none',
 			nil,
 			{
-				layout = wibox.layout.fixed.vertical,
+				layout = wibox.layout.align.horizontal,
 				expand = 'none',
-				spacing = dpi(20),
-				{
-					{
-						layout = wibox.layout.align.horizontal,
-						expand = 'none',
-						nil,
-						time_text,
-						nil
-					},
-					{
-						layout = wibox.layout.align.horizontal,
-						expand = 'none',
-						nil,
-						date_text,
-						nil
-					},
-					expand = 'none',
-					layout = wibox.layout.fixed.vertical
-				},
+				nil,
 				{
 					layout = wibox.layout.fixed.vertical,
+					expand = 'none',
+					spacing = dpi(20),
 					{
-						locker_container,
-						locker_widget,
 						{
-							layout = wibox.layout.align.vertical,
+							layout = wibox.layout.align.horizontal,
 							expand = 'none',
 							nil,
+							time_text,
+							nil
+						},
+						{
+							layout = wibox.layout.align.horizontal,
+							expand = 'none',
+							nil,
+							date_text,
+							nil
+						},
+						expand = 'none',
+						layout = wibox.layout.fixed.vertical
+					},
+					{
+						layout = wibox.layout.fixed.vertical,
+						{
+							locker_container,
+							locker_widget,
 							{
-								layout = wibox.layout.align.horizontal,
+								layout = wibox.layout.align.vertical,
 								expand = 'none',
 								nil,
-								user_image,
-								nil
+								{
+									layout = wibox.layout.align.horizontal,
+									expand = 'none',
+									nil,
+									user_image,
+									nil
+								},
+								nil,
 							},
-							nil,
+							layout = wibox.layout.stack
 						},
-						layout = wibox.layout.stack
+						user_text,
+						caps_text
 					},
-					user_text,
-					caps_text
 				},
+				nil
 			},
 			nil
 		},
-		nil
+		layout = wibox.layout.stack
 	}
 
 	-- TODO remove ability to pass false to this signal (only show lockscreen)
 	-- to prevent other processes from hiding it
 	-- should only hide after authenticated
 	awesome.connect_signal(
-		'desktop::lock-screen:visible',
+		'desktop::lock-screen',
 		function (visible)
 			if type(visible) ~= 'boolean' then
 				visible = not lockscreen.visible
@@ -317,7 +326,7 @@ local function create_main_lockscreen(s)
 end
 
 -- cover additional monitors
-local create_extended_lockscreen = function (s)
+local function create_extended_lockscreen(s)
 	local extended_lockscreen = wibox {
 		screen = s,
 		visible = false,
@@ -328,8 +337,15 @@ local create_extended_lockscreen = function (s)
 		width = s.geometry.width,
 		height = s.geometry.height,
 		fg = beautiful.fg_normal,
-		bg = beautiful.background,
-		bgimage = wallpaper
+		bg = beautiful.background
+	}
+
+	extended_lockscreen:setup {
+		image = wallpaper,
+		resize = true,
+		horizontal_fit_policy = 'fit',
+		vertical_fit_policy = 'fit',
+		widget = wibox.widget.imagebox
 	}
 
 	awesome.connect_signal(
@@ -366,4 +382,3 @@ naughty.connect_signal(
 			naughty.destroy_all_notifications(nil, 1)
 		end
 	end)
-
