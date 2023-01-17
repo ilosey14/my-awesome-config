@@ -75,5 +75,6 @@ client.connect_signal(
 	function (c)
 		if not c.fullscreen then return end
 
-		update_layout(c)
+		-- tell the taskbar there is no more fullscreen client
+		update_layout({ fullscreen = false })
 	end)

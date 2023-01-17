@@ -4,6 +4,26 @@ local wibox = require('wibox')
 local height = beautiful.taskbar_height
 local margins = beautiful.taskbar_margin
 local shape = beautiful.shapes[beautiful.taskbar_shape]
+local global_is_visible = true
+local screen_is_fullscreen = { }
+
+local function is_fullscreen(s)
+	for _, c in ipairs(client.get(s)) do
+		if c.fullscreen then return true end
+	end
+
+	return false
+end
+
+local function create_screen_tbl()
+	while #screen_is_fullscreen > 0 do
+		table.remove(screen_is_fullscreen)
+	end
+
+	for s in screen do
+		screen_is_fullscreen[s.index] = is_fullscreen(s)
+	end
+end
 
 local function create_taskbar(s)
 	local panel = wibox
@@ -83,7 +103,7 @@ local function create_taskbar(s)
 
 			key_state,
 			is_primary and systray.create_button(),
-			network.create_button(),
+			is_primary and network.create_button(),
 			battery.create_button(),
 			layout.create_button(s),
 			is_primary and control_center.create_button(s),
@@ -96,22 +116,49 @@ local function create_taskbar(s)
 	awesome.connect_signal(
 		'desktop::taskbar:visible',
 		function (s_, set_visible)
-			if s_ and s.index ~= s_.index then return end
-
-			if type(set_visible) == 'boolean' then
-				panel.visible = set_visible
-			else
-				panel.visible = not panel.visible
+			if not s_ then s_ = s
+			elseif s_.index ~= s.index then return
 			end
 
-			-- if s == screen.primary then
+			-- set explicitly considering the global state
+			if type(set_visible) == 'boolean' then
+				panel.visible = set_visible and global_is_visible
+				screen_is_fullscreen[s.index] = not set_visible
+
+			-- otherwise keep fullscreen
+			elseif screen_is_fullscreen[s.index] then
+				panel.visible = false
+
+			-- and set all other screen to the global state
+			else
+				panel.visible = global_is_visible
+			end
+
 			awesome.emit_signal('desktop::taskbar:event', panel)
-			-- end
 		end)
 
 	--
 	return panel
 end
+
+-- signals
+
+screen.connect_signal('request::desktop_decoration', create_screen_tbl)
+screen.connect_signal('request::create', create_screen_tbl)
+screen.connect_signal('request::remove', create_screen_tbl)
+
+awesome.connect_signal(
+		'desktop::taskbar:visible',
+		function (s, is_visible)
+			-- catch/sync state for all screens before setting them
+			if s and s.index ~= screen.primary.index then return end
+
+			if type(is_visible) == 'boolean' then
+				global_is_visible = is_visible
+			else
+				global_is_visible = not global_is_visible
+			end
+		end)
 
 --
 return {
