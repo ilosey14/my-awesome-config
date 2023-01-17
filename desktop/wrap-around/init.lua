@@ -5,11 +5,13 @@ local config = require('lib.config')
 
 local settings = config.load('desktop.wrap-around.settings')
 local is_enabled = settings.enabled
+local single_screen = settings.single_screen
 
 -- inspired by this post: https://www.reddit.com/r/awesomewm/comments/4a41l3/code_for_cursor_screen_wraparound_functionality/
 -- TODO support hot plugging monitors
 
 if not is_enabled then return end
+if not single_screen and screen.count() < 2 then return end
 
 -- find the outer-most screens
 local left_screen = screen.primary
