@@ -48,7 +48,7 @@ local profile_image = wibox.widget {
 	widget = wibox.widget.imagebox
 }
 
-local create_action_button = function (label, icon, callback)
+local function create_action_button(label, icon, callback)
 	local text = wibox.widget {
 		text = label,
 		font = beautiful.font,
@@ -100,26 +100,26 @@ local create_action_button = function (label, icon, callback)
 	return widget
 end
 
-local suspend_command = function ()
+local function suspend_command()
 	awesome.emit_signal('desktop::exit-screen')
-	awesome.emit_signal('desktop::lock-screen:visible', true)
+	awesome.emit_signal('desktop::lock-screen', true)
 	awful.spawn('systemctl suspend')
 end
 
-local logout_command = function ()
+local function logout_command()
 	awesome.quit()
 end
 
-local lock_command = function ()
+local function lock_command()
 	awesome.emit_signal('desktop::exit-screen')
-	awesome.emit_signal('desktop::lock-screen:visible', true)
+	awesome.emit_signal('desktop::lock-screen', true)
 end
 
-local poweroff_command = function ()
+local function poweroff_command()
 	awful.spawn('poweroff')
 end
 
-local reboot_command = function ()
+local function reboot_command()
 	awful.spawn('reboot')
 end
 
@@ -153,9 +153,8 @@ local keygrabber = awful.keygrabber {
 	end
 }
 
-local create_exit_screen = function (s)
-	local exit_screen = wibox
-	{
+local function create_exit_screen(s)
+	local exit_screen = wibox {
 		screen = s,
 		type = 'splash',
 		visible = false,
@@ -172,13 +171,11 @@ local create_exit_screen = function (s)
 		awful.button(
 			{ },
 			awful.button.names.MIDDLE,
-			function () awesome.emit_signal('desktop::exit-screen') end
-			),
+			function () awesome.emit_signal('desktop::exit-screen') end),
 		awful.button(
 			{ },
 			awful.button.names.RIGHT,
-			function () awesome.emit_signal('desktop::exit-screen') end
-		)
+			function () awesome.emit_signal('desktop::exit-screen') end)
 	}
 
 	exit_screen:setup {
@@ -248,7 +245,6 @@ local create_exit_screen = function (s)
 		nil
 	}
 
-	-- signals
 	awesome.connect_signal(
 		'desktop::exit-screen',
 		function (visible)
@@ -266,8 +262,44 @@ local create_exit_screen = function (s)
 		end)
 end
 
-screen.connect_signal('request::desktop_decoration', create_exit_screen)
---screen.connect_signal('removed', create_exit_screen)
+local function create_extended_screen(s)
+	local exit_screen = wibox {
+		screen = s,
+		type = 'splash',
+		visible = false,
+		ontop = true,
+		bg = beautiful.bg_normal,
+		fg = beautiful.fg_normal,
+		height = s.geometry.height,
+		width = s.geometry.width,
+		x = s.geometry.x,
+		y = s.geometry.y
+	}
+
+	awesome.connect_signal(
+		'desktop::exit-screen',
+		function (visible)
+			if type(visible) == 'boolean' then
+				exit_screen.visible = visible
+			else
+				exit_screen.visible = not exit_screen.visible
+			end
+		end)
+end
+
+-- signals
+
+screen.connect_signal(
+	'request::desktop_decoration',
+	function (s)
+		local primary_index = screen.primary.index or 1
+
+		if s.index == primary_index then
+			create_exit_screen(s)
+		else
+			create_extended_screen(s)
+		end
+	end)
 
 --
 return {
