@@ -42,7 +42,19 @@ local function create_button()
 		end
 	))
 
+	awesome.connect_signal(
+		'desktop::mask:dismissed',
+		function ()
+			if is_open then
+				is_open = false
+
+				icon:set_image(icons.systray_toggle_closed)
+			end
+		end)
+
 	return button
 end
+
+--
 
 return create_button

@@ -11,7 +11,7 @@ local systray_popup = awful.popup {
 	widget = {
 		{
 			{
-				bas_size = dpi(32),
+				base_size = dpi(32),
 				horizontal = true,
 				widget = wibox.widget.systray
 			},
@@ -23,6 +23,7 @@ local systray_popup = awful.popup {
 		widget = wibox.container.background
 	},
 	ontop = true,
+	width = 1, -- forces initial placement
 	minimum_height = dpi(24),
 	minimum_width = dpi(24),
 	maximum_width = dpi(256),
@@ -43,7 +44,7 @@ local function show_systray(s)
 			margins = margins
 		})
 
-	awesome.emit_signal('desktop::mask', systray_popup.screen)
+	awesome.emit_signal('desktop::mask:visible', true, systray_popup.screen)
 	systray_popup.visible = true
 end
 
