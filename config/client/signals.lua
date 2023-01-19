@@ -1,6 +1,8 @@
 local awful = require('awful')
 local beautiful = require('beautiful')
 
+local timers = require('lib.timers')
+
 local client_shape = beautiful.shapes[beautiful.client_shape]
 local fullscreen_shape = beautiful.shapes[beautiful.client_shape_fullscreen]
 
@@ -66,4 +68,8 @@ client.connect_signal(
 				update_client_shape(client_)
 			end
 		end
+
+		-- clients are losing focus when switching physical screens.
+		-- reactivating a client w/o a timeout did not work
+		timers.set_timeout(function () c:activate { raise = true } end)
 	end)
