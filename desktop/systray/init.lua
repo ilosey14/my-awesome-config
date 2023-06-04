@@ -49,6 +49,7 @@ local function show_systray(s)
 end
 
 local function hide_systray()
+	awesome.emit_signal('desktop::mask:visible', false)
 	systray_popup.visible = false
 end
 
