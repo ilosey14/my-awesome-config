@@ -183,8 +183,10 @@ local create_titlebar = function (c, args)
 
 	if position == 'top' or position == 'bottom' then
 		orientation = 'horizontal'
-	else
+	elseif position == 'left' or position == 'right' then
 		orientation = 'vertical'
+	else
+		return
 	end
 
 	-- match title orientation
@@ -208,9 +210,9 @@ local create_titlebar = function (c, args)
 	})
 	local top_right = wibox.widget {
 		{
-			close_button,
-			maximize_button,
 			minimize_button,
+			maximize_button,
+			close_button,
 			spacing = spacing,
 			layout  = wibox.layout.fixed[orientation]
 		},
@@ -245,9 +247,9 @@ local create_titlebar = function (c, args)
 		}
 	else
 		titlebar:setup {
-			top_right,
+			wibox.container.rotate(top_right, 'south'),
 			middle_center,
-			bottom_left,
+			wibox.container.rotate(bottom_left, 'south'),
 			layout = wibox.layout.align[orientation]
 		}
 	end
