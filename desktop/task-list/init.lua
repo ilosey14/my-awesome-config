@@ -47,38 +47,61 @@ local function create_context_menu_item(text, on_click)
 			awful.button {
 				modifiers = { },
 				button = awful.button.names.LEFT,
-				on_press = on_click
+				-- on_press = on_click
+				on_release = on_click
 			}
 		}
 	}
 end
 
 local menu_client = nil
+local extra_buttons = wibox.widget {
+	layout = wibox.layout.fixed.vertical,
+	{
+		margins = gap,
+		widget = wibox.container.margin
+	}
+}
 local context_menu = awful.popup {
 	widget = {
 		{
 			layout = wibox.layout.fixed.vertical,
-			create_context_menu_item('❌  Close',      function () menu_client:kill() end),
+			create_context_menu_item(
+				'❌  Close',
+				function () menu_client:kill() end),
 			{
 				margins = gap,
 				widget = wibox.container.margin
 			},
-			create_context_menu_item('⏫  Maximize',   function () menu_client.maximized = not menu_client.maximized end),
-			create_context_menu_item('⏬  Minimize',   function () menu_client.minimized = not menu_client.minimized end),
-			create_context_menu_item('🖥️  Fullscreen', function ()
-				menu_client.fullscreen = not menu_client.fullscreen
+			create_context_menu_item(
+				'⏫  Maximize',
+				function () menu_client.maximized = not menu_client.maximized end),
+			create_context_menu_item(
+				'⏬  Minimize',
+				function () menu_client.minimized = not menu_client.minimized end),
+			create_context_menu_item(
+				'🖥️  Fullscreen',
+				function ()
+					menu_client.fullscreen = not menu_client.fullscreen
 
-				if menu_client.fullscreen then
-					menu_client:activate { raise = true }
-				end
-			end),
+					if menu_client.fullscreen then
+						menu_client:activate { raise = true }
+					end
+				end),
 			{
 				margins = gap,
 				widget = wibox.container.margin
 			},
-			create_context_menu_item('☁️  Float',      function () menu_client.floating  = not menu_client.floating end),
-			create_context_menu_item('🚀  On Top',     function () menu_client.ontop     = not menu_client.ontop end),
-			create_context_menu_item('🚥  Titlebars',  function () client.emit_signal('titlebar:visible', menu_client) end),
+			create_context_menu_item(
+				beautiful.tasklist_floating .. '  Float',
+				function () menu_client.floating = not menu_client.floating end),
+			create_context_menu_item(
+				beautiful.tasklist_ontop .. '  On Top',
+				function () menu_client.ontop = not menu_client.ontop end),
+			create_context_menu_item(
+				'🚥  Titlebars',
+				function () client.emit_signal('titlebar:visible', menu_client) end),
+			extra_buttons
 		},
 		margins = margins,
 		widget = wibox.container.margin
@@ -94,6 +117,8 @@ local context_menu = awful.popup {
 	visible = false
 }
 
+local swipe_geo = nil
+
 function context_menu:show(client)
 	if self.visible then return end
 	if client == nil then return end
@@ -103,9 +128,8 @@ function context_menu:show(client)
 	-- get the full task list button which is
 	-- the second to last geometry in the current geometries table
 	local mouse_coords = mouse.coords()
-	local w_geo_list = mouse.current_widget_geometries
-	local w_geo = w_geo_list[#w_geo_list - 1]
-	local s_geo = mouse.screen.geometry;
+	local s_geo = mouse.screen.geometry
+	local w_geo = swipe_geo or mouse.current_widget_geometry
 
 	awful.placement.top(context_menu, {
 		parent = mouse,
@@ -121,6 +145,7 @@ function context_menu:show(client)
 	awesome.emit_signal('desktop::mask:visible', true)
 
 	menu_client = client
+	swipe_geo = nil
 	self.visible = true
 end
 
@@ -166,9 +191,13 @@ local task_list_buttons = {
 	awful.button(
 		{ },
 		awful.button.names.LEFT,
-		function () left_down = true end,
+		function ()
+			left_down = true
+			swipe_geo = mouse.current_widget_geometry
+		end,
 		function (c)
 			left_down = false
+			swipe_geo = nil
 
 			-- dismiss context menu
 			if context_menu.visible then
@@ -195,7 +224,8 @@ local create_task_list = function (s)
 	-- https://awesomewm.org/apidoc/widgets/awful.widget.tasklist.html
 	return awful.widget.tasklist {
 		screen = s,
-		filter = awful.widget.tasklist.filter.allscreen,
+		-- filter = awful.widget.tasklist.filter.allscreen,
+		filter = awful.widget.tasklist.filter.currenttags,
 		source = function ()
 			-- reverse order
 			local source = { }
@@ -270,9 +300,27 @@ awesome.connect_signal(
 
 		timers.set_timeout(
 			function ()
-				if task_list_tooltip.visible then task_list_tooltip.visible = false end
+				if task_list_tooltip.visible then
+					task_list_tooltip.visible = false
+				end
 			end,
 			1)
+	end)
+
+awesome.connect_signal(
+	'desktop::task-list:add-context',
+	function (label, callback)
+		extra_buttons:add(
+			create_context_menu_item(
+				label,
+				function ()
+					-- capture client reference before it is cleared
+					local c = menu_client
+
+					-- schedule callback for after context menu (and mask) is closed
+					timers.set_timeout(function () callback(c) end)
+				end)
+			)
 	end)
 
 --
