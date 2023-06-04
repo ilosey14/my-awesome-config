@@ -22,7 +22,10 @@ client.connect_signal(
 		--c:move_to_screen(mouse.screen)
 		--c:move_to_screen(client.focus.screen)
 
-		c:activate { raise = true }
+		c:activate {
+			raise = true,
+			switch_to_tag = true
+		}
 
 		if awesome.startup then
 			-- prevent clients from being unreachable after screen count changes.

@@ -56,6 +56,7 @@ local function create_taskbar(s)
 
 	local app_drawer			= require('desktop.app-drawer')
 	local search				= require('desktop.search')
+	local virtual_desktops		= require('desktop.virtual-desktops')
 	local pinned_apps			= require('desktop.pinned-apps')
 
 	local task_list				= require('desktop.task-list')
@@ -78,6 +79,7 @@ local function create_taskbar(s)
 			spacing = beautiful.useless_gap,
 
 			app_drawer.create_button(),
+			virtual_desktops.create_button(),
 			is_primary and search.create_button(),
 			is_primary and pinned_apps.create_list(),
 			{
