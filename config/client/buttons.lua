@@ -41,6 +41,8 @@ return awful.util.table.join(
 		function (c)
 			if not c.active then c:activate() end
 			if c.maximized then c.maximized = false end
+			if c.maximized_vertical then c.maximized_vertical = false end
+			if c.maximized_horizontal then c.maximized_horizontal = false end
 
 			awful.mouse.client.move(c)
 		end

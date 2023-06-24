@@ -137,13 +137,19 @@ local client_keys = awful.util.table.join(
 	awful.key(
 		{ super },
 		'Left',
-		function (c) snap_to_left(c, { honor_workarea = true, margins = margins, to_percent = 0.5 }) end,
+		function (c)
+			c.maximized_vertical = true
+			snap_to_left(c, { honor_workarea = true, margins = margins, to_percent = 0.5 })
+		end,
 		{ description = 'Snap to left', group = 'Client' }
 	),
 	awful.key(
 		{ super },
 		'Right',
-		function (c) snap_to_right(c, { honor_workarea = true, margins = margins, to_percent = 0.5 }) end,
+		function (c)
+			c.maximized_vertical = true
+			snap_to_right(c, { honor_workarea = true, margins = margins, to_percent = 0.5 })
+		end,
 		{ description = 'Snap to right', group = 'Client' }
 	),
 	--
